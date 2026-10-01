@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>FightIQ Coach</title>
+<style>
+:root{--bg:#0D0D12;--surf:#16161F;--surf2:#1E1E2A;--line:#2A2A3A;--text:#F0F0FF;--dim:#8888AA;--red:#E8002A;--blue:#1A6FD4;--green:#1DB954;--orange:#FF8C00;color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px);background:var(--bg)}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;max-width:640px;margin:0 auto;padding:16px 14px 40px}
+h1{font-size:22px;font-weight:800;letter-spacing:.02em}
+h1 span{color:var(--red)}
+.sub{color:var(--dim);font-size:13px;margin:2px 0 12px}
+.tabs{display:flex;gap:6px;margin-bottom:14px}
+.tabs button{background:var(--surf);border:1px solid var(--line);color:var(--dim);min-height:44px;padding:8px}
+.tabs button.on{background:linear-gradient(90deg,var(--red),var(--blue));color:#fff;border-color:transparent}
+.card{background:var(--surf);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:14px}
+.card h2{font-size:13px;font-weight:700;color:var(--dim);margin-bottom:10px}
+select,input[type=text],input[type=number],textarea{width:100%;background:var(--surf2);border:1px solid var(--line);color:var(--text);border-radius:8px;padding:10px 12px;font:inherit;min-height:42px}
+textarea{resize:vertical;min-height:70px}
+button{font:inherit;cursor:pointer;border:0;border-radius:8px;min-height:48px;padding:12px;font-weight:700;color:#fff;width:100%}
+.go{background:linear-gradient(90deg,var(--red),var(--blue));letter-spacing:.04em}
+button:disabled{opacity:.5}
+.msg{white-space:pre-wrap;word-wrap:break-word;line-height:1.55}
+.msg h3{font-size:15px;color:var(--red);margin:14px 0 2px;display:block}
+.msg h3:first-child{margin-top:0}
+.you{background:var(--surf2);border-radius:8px;padding:10px 12px;margin:14px 0 10px;color:var(--dim)}
+.note{color:var(--orange);font-size:13px;margin-top:10px}
+.row{display:flex;gap:8px;margin-top:12px}
+.row button{width:auto;flex:0 0 auto;padding:12px 18px}
+#stop{background:var(--surf2);border:1px solid var(--line);color:var(--dim)}
+[hidden]{display:none!important}
+.lab{font-size:12px;color:var(--dim);margin:12px 0 4px}
+.lab:first-of-type{margin-top:0}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{width:auto;min-height:40px;padding:8px 12px;background:var(--surf2);border:1px solid var(--line);color:var(--dim);font-weight:600}
+.chip.on{background:var(--red);border-color:var(--red);color:#fff}
+.log2{background:var(--surf2);border:1px solid var(--line);color:var(--dim);margin-top:8px}
+.cal-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.cal-h button{width:44px;min-height:44px;padding:0;background:var(--surf2);border:1px solid var(--line)}
+.cal-h b{text-transform:capitalize}
+.grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.wd{text-align:center;font-size:12px;color:var(--dim)}
+.c{aspect-ratio:1;min-height:44px;border-radius:8px;background:var(--surf2);border:1px solid var(--line);color:var(--text);font-weight:600;font-size:14px;padding:2px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;width:auto}
+.c.off{visibility:hidden}
+.c.today{border-color:var(--blue)}
+.c.sel{outline:2px solid var(--red)}
+.c i{width:6px;height:6px;border-radius:50%;background:transparent;display:block}
+.c i.t{background:var(--red)}.c i.r{background:var(--blue)}
+.f3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0 0}
+.f3 label{font-size:12px;color:var(--dim);display:block;margin-bottom:2px}
+.leg{color:var(--dim);font-size:13px;margin-top:8px}
+.bar{display:flex;align-items:center;gap:8px;margin:6px 0;font-size:13px}
+.bar span:first-child{width:84px}
+.bar .tr{flex:1;height:10px;background:var(--surf2);border-radius:5px;overflow:hidden}
+.bar .tr div{height:100%;background:linear-gradient(90deg,var(--red),var(--blue))}
+.bar span:last-child{width:92px;text-align:right;color:var(--dim)}
+.kp{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px}
+.kp div{background:var(--surf2);border-radius:8px;padding:10px;text-align:center}
+.kp b{display:block;font-size:20px}.kp small{color:var(--dim);font-size:12px}
+.hint{color:var(--orange);font-size:14px;margin:6px 0}
+.ok{color:var(--green);font-size:14px}
+.del{background:transparent;border:1px solid var(--line);color:var(--dim);min-height:40px;margin-top:10px}
+</style>
+</head>
+<body>
+<h1>FIGHT<span>IQ</span> Coach</h1>
+<p class="sub">Deine freiwilligen Extra-Einheiten. Zeit rein, Training raus. <span id="sv"></span></p>
+
+<div class="tabs">
+  <button data-tab="today" class="on">Heute</button>
+  <button data-tab="cal">Kalender</button>
+  <button data-tab="focus">Fokus</button>
+</div>
+
+<section id="today">
+  <div class="card">
+    <h2>Ich habe Zeit für ein Extra-Training</h2>
+    <div class="lab">Wie viel Zeit?</div><div class="chips" data-g="zeit"></div>
+    <div class="lab">Wie fit bist du?</div><div class="chips" data-g="en"></div>
+    <div class="lab">Schicht heute</div><div class="chips" data-g="sch"></div>
+    <div class="lab">Was hast du dabei?</div><div class="chips" data-g="mit"></div>
+    <div class="lab">Gym-Training</div><div class="chips" data-g="gym"></div>
+    <div class="lab">Wunsch oder Notiz (optional)</div>
+    <textarea id="tnote" placeholder="z.B. Schulter zwickt, will Takedowns üben, Kampf in 3 Wochen"></textarea>
+  </div>
+  <button class="go" id="gen">TRAINING EMPFEHLEN</button>
+  <p class="note" id="status" hidden></p>
+  <div class="card" id="outCard" hidden style="margin-top:14px">
+    <div id="out"></div>
+    <button class="log2" id="tolog">Gemacht? Im Kalender eintragen</button>
+    <div class="row">
+      <input type="text" id="ask" placeholder="Nachfrage, z.B. lieber nur Grappling?" autocomplete="off">
+      <button class="go" id="send">Senden</button>
+      <button id="stop" hidden>Stopp</button>
+    </div>
+  </div>
+</section>
+
+<section id="cal" hidden>
+  <div class="card">
+    <div class="cal-h"><button id="pm" aria-label="Vorheriger Monat">‹</button><b id="ml"></b><button id="nm" aria-label="Nächster Monat">›</button></div>
+    <div class="grid" id="wdh"></div>
+    <div class="grid" id="grid" style="margin-top:4px"></div>
+    <p class="leg"><span style="color:var(--red)">●</span> Extra-Training &nbsp; <span style="color:var(--blue)">●</span> nur Gym/Schlaf/Notiz</p>
+  </div>
+  <div class="card">
+    <h2 id="edh"></h2>
+    <div class="lab">Extra-Training (freiwillig)</div><div class="chips" id="chips"></div>
+    <div class="lab">Gym-Training</div><div class="chips" id="gchip"></div>
+    <div class="f3">
+      <div><label for="emin">Dauer (Min)</label><input type="number" id="emin" inputmode="numeric" min="0" max="300"></div>
+      <div><label for="erpe">Belastung</label><select id="erpe"><option value="">–</option></select></div>
+      <div><label for="esl">Schlaf (h)</label><input type="number" id="esl" inputmode="decimal" step="0.5" min="0" max="14"></div>
+    </div>
+    <div class="lab">Notiz (was lief gut, was zwickt, woran gearbeitet)</div>
+    <textarea id="en" placeholder="z.B. Jab-Cross-Low-Kick Timing, Level Changes, Schulter links müde"></textarea>
+    <button class="del" id="edel">Eintrag löschen</button>
+  </div>
+</section>
+
+<section id="focus" hidden>
+  <div class="card"><h2>Letzte 28 Tage</h2><div id="kp" class="kp"></div><div id="bars"></div></div>
+  <div class="card"><h2>Auffälligkeiten</h2><div id="hints"></div></div>
+  <button class="go" id="an">WAS BRAUCHE ICH ALS NÄCHSTES?</button>
+  <p class="note" id="anst" hidden></p>
+  <div class="card" id="anCard" hidden style="margin-top:14px"><div class="msg" id="anOut"></div></div>
+</section>
+
+<script>
+const TR=['Boxen','MMA','Grappling'];
+const G={
+  zeit:['20 Min','30 Min','45 Min','60 Min'],
+  en:['Frisch','Geht so','Müde'],
+  sch:['Frei','Frühschicht (ab 05:00)','Tagesschicht','Berufsschule'],
+  mit:['Solo (ohne Material)', 'Sandsack', 'Pratzen (mit Partner)'],
+  gym:['Kein Gym heute','Gym schon gehabt','Gym kommt noch']
+};
+const BRIEF=`Du bist mein persönlicher MMA-Coach. Ich bin Julian, 18, wohne in der Schweiz und mache eine harte Ausbildung als SBB-Zugverkehrsleiter im unregelmässigen Schichtdienst (Frühschichten ab 05:00 Uhr). Mein Ziel ist eine Profi-Karriere im MMA. Mein reguläres Training mit Trainer und Team läuft im 360 Martial Arts in Zürich (meistens MMA, Thaiboxen oder Grappling, oft habe ich davor oder danach dieses reguläre Training). Southpaw-Auslage, starke Athletik aus 8 Jahren Kunstturnen.
+
+Diese App ist NUR für meine freiwilligen Extra-Einheiten in der Freizeit, wenn ich neben dem Gym Zeit habe. Dafür trainiere ich ausschliesslich Boxen, MMA und MMA-Grappling. Kein Krafttraining (schweres Kraft plus Schichtdienst hat mein ZNS und meine Regeneration ruiniert). Regeneration geht vor: nach Frühschichten Powernap, kein Vollgas wenn ich müde bin, Sonntag ist Ruhetag. Wenn Pause die beste Empfehlung ist, sag das klar (Schlaf vor Ego).
+
+WICHTIG BEI MATERIAL & PARTNER:
+- Pratzen gehen NUR mit einem Partner (wenn ich "Pratzen (mit Partner)" gewählt habe).
+- Sandsack oder Solo geht auch ohne Partner.
+- Da meine Extra-Einheiten oft direkt nach dem regulären Training (MMA, Thaiboxen oder Grappling) stattfinden, berücksichtige die Vorbelastung aus diesem Gym-Training.
+
+Du siehst meinen Trainingslog. Nutze ihn: Welche Disziplin kam zu kurz, was habe ich in den Notizen als Schwäche genannt, wie hoch war die Belastung, wie war der Schlaf, wie viel Gym-Training hatte ich schon. Empfiehl nur, was zu Zeit, Fitness, Material und Partner passt. Solo-Einheiten sind kurz, fokussiert und technisch (Timing, Footwork, Entries, Prehab), kein sinnloses Auspowern.`;
+const FORMAT=`FORMAT: Kurz und direkt auf Augenhöhe, Schweizer Rechtschreibung mit ss, kein Fluff. Kein Markdown ausser Überschriften mit "## ". Genau diese Abschnitte: "## Empfehlung" (Disziplin, Dauer, Ziel in 1–2 Zeilen), "## Ablauf" (Blöcke mit Minuten, je 1 Zeile), "## Warum jetzt" (1–2 Sätze mit Bezug zum Log).`;
+const AFORMAT=`FORMAT: Kurz und direkt, Schweizer Rechtschreibung mit ss, kein Markdown ausser Überschriften mit "## ". Abschnitte: "## Was lief gut", "## Was fehlt", "## Nächste 3 Extra-Einheiten" (genau 3, je Disziplin, Dauer und Schwerpunkt in einer Zeile).`;
+
+const $=id=>document.getElementById(id);
+const use=n=>window.claude?window.claude.use(n).catch(()=>null):Promise.resolve(null);
+const mk=()=>({log:{},t:{zeit:1,en:1,sch:0,mit:0,gym:0},tn:''});
+function norm(s){const d=mk();if(!s||typeof s!=='object')return d;if(s.log&&typeof s.log==='object')d.log=s.log;if(s.t&&typeof s.t==='object')Object.assign(d.t,s.t);d.tn=s.tn||'';return d}
+let S=mk(),doc=null,sample=null,tmr=null;
+try{S=norm(JSON.parse(localStorage.getItem('fiq:v3')||localStorage.getItem('fiq:v2')||'null'))}catch(e){}
+const setSt=t=>{$('sv').textContent=t?'· '+t:''};
+function save(){
+  try{localStorage.setItem('fiq:v3',JSON.stringify(S))}catch(e){}
+  if(!doc)return;
+  setSt('speichert…');clearTimeout(tmr);
+  tmr=setTimeout(async()=>{try{await doc.set(S);setSt('gespeichert ✓')}catch(e){setSt('nur lokal gespeichert')}},600);
+}
+
+const pad=n=>String(n).padStart(2,'0');
+const dk=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+const fromK=k=>{const[a,b,c]=k.split('-').map(Number);return new Date(a,b-1,c)};
+const today=()=>{const d=new Date();d.setHours(0,0,0,0);return d};
+const back=n=>{const d=today();d.setDate(d.getDate()-n);return d};
+const WD=['Mo','Di','Mi','Do','Fr','Sa','So'];
+const wdIdx=d=>(d.getDay()+6)%7;
+let view=today(),sel=dk(today());view.setDate(1);
+
+document.querySelector('.tabs').addEventListener('click',e=>{
+  const t=e.target.dataset.tab;if(!t)return;go(t);
+});
+function go(t){
+  document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('on',b.dataset.tab===t));
+  ['today','cal','focus'].forEach(s=>$(s).hidden=s!==t);
+  if(t==='cal')drawCal();if(t==='focus')drawFocus();
+}
+
+/* heute */
+function drawG(){
+  document.querySelectorAll('[data-g]').forEach(box=>{
+    const g=box.dataset.g;
+    box.innerHTML=G[g].map((l,i)=>`<button class="chip${S.t[g]===i?' on':''}" data-i="${i}">${l}</button>`).join('');
+  });
+}
+document.querySelectorAll('[data-g]').forEach(box=>box.addEventListener('click',e=>{
+  const i=e.target.dataset.i;if(i===undefined)return;
+  S.t[box.dataset.g]=+i;save();drawG();
+}));
+$('tnote').addEventListener('input',e=>{S.tn=e.target.value;save()});
+
+/* log helpers */
+const E=k=>S.log[k];
+const vol=e=>e&&(e.t||[]).length>0;
+const any=e=>e&&((e.t||[]).length||e.gym||e.sl||e.n||e.min);
+function lastDays(n){const o=[];for(let i=0;i<n;i++){const d=back(i);o.push({d,e:E(dk(d))})}return o}
+function line(x){
+  const e=x.e,p=[(e.t||[]).length?'Extra: '+e.t.join('+'):'kein Extra-Training'];
+  if(e.min)p.push(e.min+' Min');if(e.rpe)p.push('Belastung '+e.rpe+'/10');if(e.gym)p.push('Gym-Training: ja');if(e.sl)p.push('Schlaf '+e.sl+' h');
+  return `${WD[wdIdx(x.d)]} ${pad(x.d.getDate())}.${pad(x.d.getMonth()+1)}.: ${p.join(', ')}`+(e.n?' – '+e.n:'');
+}
+function logText(n){
+  const l=lastDays(n).filter(x=>any(x.e)).reverse();
+  return l.length?`MEIN TRAININGSLOG (letzte ${n} Tage, Tage ohne Eintrag = nicht erfasst):\n`+l.map(line).join('\n'):'MEIN TRAININGSLOG: noch keine Einträge. Starte mit einer ausgewogenen Einheit.';
+}
+function todayText(){
+  const t=S.t;
+  return `HEUTE (${WD[wdIdx(today())]} ${pad(today().getDate())}.${pad(today().getMonth()+1)}.):\nZeit: ${G.zeit[t.zeit]}\nFitness: ${G.en[t.en]}\nSchicht: ${G.sch[t.sch]}\nMaterial/Partner: ${G.mit[t.mit]}\nGym-Training: ${G.gym[t.gym]}`+(S.tn.trim()?'\nNotiz/Wunsch: '+S.tn.trim():'');
+}
+
+/* chat */
+const esc=s=>s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+function md(t){return esc(t).split('\n').map(l=>/^#{1,3} /.test(l)?'<h3>'+l.replace(/^#+ /,'')+'</h3>':l).join('\n').replace(/<\/h3>\n/g,'</u>').replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')}
+const ERR={not_granted:'Ohne Freigabe kann der Coach nicht antworten.',rate_limited:'Zu viele Anfragen. Kurz warten und nochmal versuchen.'};
+let turns=[],ctl=null,busy=false;
+function setBusy(b){busy=b;$('gen').disabled=b||!sample;$('an').disabled=b\vert{}\vert{}!sample;$('send').disabled=b;$('stop').hidden=!b;$('send').hidden=b}
+async function run(input,box,stEl,keep){
+  const div=document.createElement('div');div.className='msg';div.textContent='Coach denkt nach…';box.appendChild(div);
+  ctl=new AbortController();setBusy(true);stEl.hidden=true;
+  try{
+    const r=await sample(input,{signal:ctl.signal,cache:false,modelTier:'default',onText:({text})=>{div.innerHTML=md(text)}});
+    div.innerHTML=md(r.text);if(keep)turns.push({role:'assistant',content:r.text});
+  }catch(e){
+    if(e.text){div.innerHTML=md(e.text);if(keep)turns.push({role:'assistant',content:e.text})}else div.remove();
+    if(e.code!=='cancelled'){stEl.hidden=false;stEl.textContent=ERR[e.code]||'Das hat nicht geklappt. Versuch es nochmal.'}
+    if(keep&&!e.text&&turns.length>1&&turns[turns.length-1].role==='user')turns.pop();
+  }finally{setBusy(false)}
+}
+$('gen').onclick=()=>{
+  if(!sample||busy)return;
+  $('out').innerHTML='';$('outCard').hidden=false;
+  turns=[{role:'user',content:BRIEF+'\n\n'+todayText()+'\n\n'+logText(21)+'\n\n'+FORMAT}];
+  run(turns,$('out'),$('status'),true);$('outCard').scrollIntoView({behavior:'smooth'});
+};
+function sendAsk(){
+  const q=$('ask').value.trim();if(!q||busy||!turns.length||turns[turns.length-1].role!=='assistant')return;
+  $('ask').value='';const y=document.createElement('div');y.className='you';y.textContent=q;$('out').appendChild(y);
+  turns.push({role:'user',content:q});run(turns,$('out'),$('status'),true);
+}
+$('send').onclick=sendAsk;
+$('ask').addEventListener('keydown',e=>{if(e.key==='Enter')sendAsk()});$('stop').onclick=()=>ctl&&ctl.abort();
+$('tolog').onclick=()=>{sel=dk(today());view=today();view.setDate(1);go('cal');$('edh').scrollIntoView({behavior:'smooth'})};
+
+/* kalender */
+$('wdh').innerHTML=WD.map(d=>`<div class="wd">${d}</div>`).join('');
+$('erpe').innerHTML+=[1,2,3,4,5,6,7,8,9,10].map(n=>`<option>${n}</option>`).join('');
+$('chips').innerHTML=TR.map(t=>`<button class="chip" data-t="${t}">${t}</button>`).join('');
+$('gchip').innerHTML='<button class="chip" data-gym="1">Gym-Training gehabt</button>';
+const dotC=e=>vol(e)?'t':any(e)?'r':'';
+function drawCal(){
+  $('ml').textContent=view.toLocaleDateString('de-CH',{month:'long',year:'numeric'});
+  const first=wdIdx(view),n=new Date(view.getFullYear(),view.getMonth()+1,0).getDate(),tk=dk(today());
+  let h='<div class="c off"></div>'.repeat(first);
+  for(let d=1;d<=n;d++){
+    const k=view.getFullYear()+'-'+pad(view.getMonth()+1)+'-'+pad(d);
+    h+=`<button class="c${k===tk?' today':''}${k===sel?' sel':''}" data-k="${k}" aria-label="${d}. ${$('ml').textContent}">${d}<i class="${dotC(E(k))}"></i></button>`;
+  }
+  $('grid').innerHTML=h;drawEd();
+}
+$('pm').onclick=()=>{view.setMonth(view.getMonth()-1);drawCal()};
+$('nm').onclick=()=>{view.setMonth(view.getMonth()+1);drawCal()};$('grid').addEventListener('click',e=>{const b=e.target.closest('[data-k]');if(!b)return;sel=b.dataset.k;drawCal()});
+function drawEd(){
+  const e=E(sel)||{};
+  $('edh').textContent=fromK(sel).toLocaleDateString('de-CH',{weekday:'long',day:'numeric',month:'long'});
+  document.querySelectorAll('#chips .chip').forEach(c=>c.classList.toggle('on',(e.t||[]).includes(c.dataset.t)));
+  document.querySelector('#gchip .chip').classList.toggle('on',!!e.gym);
+  $('emin').value=e.min||'';$('erpe').value=e.rpe\vert{}\vert{}'';$('esl').value=e.sl||'';$('en').value=e.n\vert{}\vert{}'';$('edel').hidden=!E(sel);
+}
+function upd(fn){
+  const e=S.log[sel]||(S.log[sel]={t:[],gym:false,min:'',rpe:'',sl:'',n:''});fn(e);
+  if(!any(e))delete S.log[sel];
+  save();
+  const c=document.querySelector(`#grid [data-k="${sel}"] i`);if(c)c.className=dotC(E(sel));
+  $('edel').hidden=!E(sel);
+}
+$('chips').addEventListener('click',e=>{
+  const t=e.target.dataset.t;if(!t)return;
+  upd(x=>{x.t=x.t||[];const i=x.t.indexOf(t);i>=0?x.t.splice(i,1):x.t.push(t)});
+  e.target.classList.toggle('on',(E(sel)&&E(sel).t||[]).includes(t));
+});
+$('gchip').addEventListener('click',e=>{   if(!e.target.dataset.gym)return;   upd(x=>x.gym=!x.gym);e.target.classList.toggle('on',!!(E(sel)&&E(sel).gym)); });$('emin').addEventListener('input',e=>upd(x=>x.min=e.target.value));
+$('erpe').addEventListener('change',e=>upd(x=>x.rpe=e.target.value));$('esl').addEventListener('input',e=>upd(x=>x.sl=e.target.value));
+$('en').addEventListener('input',e=>upd(x=>x.n=e.target.value));$('edel').onclick=()=>{delete S.log[sel];save();drawCal()};
+
+/* fokus */
+function drawFocus(){
+  const d28=lastDays(28),d14=d28.slice(0,14),d7=d28.slice(0,7);
+  const ex=d28.filter(x=>vol(x.e)),rp=ex.map(x=>+x.e.rpe).filter(Boolean);
+  const sl=d7.map(x=>parseFloat(x.e&&x.e.sl)).filter(v=>v>0);
+  const avg=a=>a.reduce((s,v)=>s+v,0)/a.length;
+  $('kp').innerHTML=`<div><b>${ex.length}</b><small>Extra-Einheiten</small></div><div><b>${rp.length?avg(rp).toFixed(1):'–'}</b><small>Ø Belastung</small></div><div><b>${sl.length?avg(sl).toFixed(1):'–'}</b><small>Ø Schlaf 7 T (h)</small></div>`;
+  const cnt={},last={};TR.forEach(t=>{cnt[t]=0;last[t]=null});
+  d28.forEach((x,i)=>(x.e&&x.e.t||[]).forEach(t=>{if(t in cnt){cnt[t]++;if(last[t]===null)last[t]=i}}));
+  const gy=d28.filter(x=>x.e&&x.e.gym).length,mx=Math.max(1,gy,...Object.values(cnt));
+  const bar=(n,c,l)=>`<div class="bar"><span>${n}</span><div class="tr"><div style="width:${c/mx*100}%"></div></div><span>${c}× ${l}</span></div>`;
+  $('bars').innerHTML=TR.map(t=>bar(t,cnt[t],last[t]===null?'':last[t]===0?'· heute':'· vor '+last[t]+' T')).join('')+bar('Gym',gy,'');
+  const H=[],c14={};TR.forEach(t=>c14[t]=0);
+  d14.forEach(x=>(x.e&&x.e.t||[]).forEach(t=>{if(t in c14)c14[t]++}));
+  if(d14.filter(x=>any(x.e)).length<3)H.push('Noch wenig im Log. Trag nach jedem Extra-Training kurz ein, dann werden die Empfehlungen richtig gut.');
+  else{
+    const gaps=TR.filter(t=>!c14[t]);
+    if(gaps.length)H.push('Seit 14 Tagen kein Extra-Training bei: '+gaps.join(', ')+'.');
+    const hard=d7.filter(x=>+(x.e&&x.e.rpe)>=8).length;
+    if(hard>=3)H.push(hard+' harte Einheiten (Belastung ≥ 8) in 7 Tagen. Zu viel Vollgas.');
+    const both=d7.filter(x=>vol(x.e)&&x.e.gym&&+x.e.rpe>=7).length;
+    if(both>=2)H.push('Mehrmals Gym plus hartes Extra am gleichen Tag. Lieber leichter oder Pause.');
+    if(sl.length>=3&&avg(sl)<7)H.push('Schlafschnitt unter 7 h. Schlaf vor Ego.');
+    const sun=d28.filter(x=>wdIdx(x.d)===6&&vol(x.e)).length;
+    if(sun)H.push('Extra-Training am Sonntag ('+sun+'×). Sonntag ist heilig.');
+  }
+  $('hints').innerHTML=H.length?H.map(h=>`<p class="hint">• ${esc(h)}</p>`).join(''):'<p class="ok">Nichts Auffälliges. Weiter so.</p>';
+}
+$('an').onclick=()=>{
+  if(!sample||busy)return;
+  $('anOut').innerHTML='';$('anCard').hidden=false;
+  run(BRIEF+'\n\n'+logText(28)+'\n\nAUFGABE: Analysiere meine Extra-Einheiten der letzten 28 Tage und sag mir, was ich als Nächstes brauche.\n\n'+AFORMAT,$('anOut'),$('anst'),false);$('anCard').scrollIntoView({behavior:'smooth'});
+};
+
+/* init */
+drawG();$('tnote').value=S.tn||'';
+(async()=>{
+  try{
+    const u=await use('user'),id=u&&await u.id(),db=await use('db');
+    if(db&&id){
+      doc=db.collection('data/users/'+id).doc('fiq');
+      const s=await doc.get();
+      if(s.exists){S=norm(s.data());drawG();$('tnote').value=S.tn||'';if(!$('cal').hidden)drawCal();if(!$('focus').hidden)drawFocus();setSt('gespeichert ✓')}
+      else save();
+    }
+  }catch(e){doc=null}
+  if(!doc)setSt('nur auf diesem Gerät gespeichert');
+  sample=await use('sample');
+  if(!sample){$('gen').disabled=true;$('an').disabled=true;$('status').hidden=false;$('status').textContent='Der Coach läuft nur, wenn du die Seite in Claude öffnest.'}
+})();
+</script>
+</body>
+</html>
